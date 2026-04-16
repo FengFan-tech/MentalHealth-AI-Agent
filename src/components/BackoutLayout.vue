@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container class="navbar-section">
-      <el-header>
+      <el-header class="sider-bar">
         <SiderBar></SiderBar>
       </el-header>
       <el-container>
@@ -27,6 +27,11 @@ import SiderBar from "@/components/SiderBar.vue";
 .common-layout {
   height: 100vh;
   background-color: #f5f7fa;
+
+  .sider-bar {
+    height: 100%;
+    // background-color: blue;
+  }
   
   .navbar-section {
     height: 100%;
