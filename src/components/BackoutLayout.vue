@@ -5,11 +5,9 @@
         <SiderBar></SiderBar>
       </el-header>
       <el-container>
-        <el-aside width="264px" >
-          <NavBar></NavBar>
-        </el-aside>
-        <el-main>
-            <router-view></router-view>
+        <NavBar></NavBar>
+        <el-main class="main-container">
+            <router-view class="content-container"></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -37,5 +35,14 @@ import SiderBar from "@/components/SiderBar.vue";
     height: 100%;
   }
 
+  .main-container {
+    height: 100%;
+    width: 100%;
+    // background-color: aqua;
+    .content-container {
+      padding: 20px;
+      min-height: calc(100% - 74px);
+    }
+  }
 }
 </style>

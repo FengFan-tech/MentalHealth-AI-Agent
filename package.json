@@ -10,13 +10,17 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "axios": "^1.15.1",
     "element-plus": "^2.13.7",
     "git": "^0.1.5",
+    "pinia": "^3.0.4",
     "vue": "^3.5.32",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",
+    "eslint": "^10.2.1",
+    "prettier": "^3.8.3",
     "sass": "^1.99.0",
     "vite": "^8.0.4"
   }

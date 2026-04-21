@@ -4,6 +4,9 @@ import Emotion from '@/views/Emotion.vue'
 import Conclution from '@/views/Conclution.vue'
 import DashBroad from '@/views/DashBroad.vue'
 import Knowledge from '@/views/Knowledge.vue'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import AuthLayout from '@/components/AuthLayout.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -12,6 +15,7 @@ export const router = createRouter({
       path: '/',
       name: 'BackoutLayout',
       component: BackoutLayout,
+      redirect: '/knowledge',
       children: [
         {
           path: 'emotion',
@@ -48,6 +52,31 @@ export const router = createRouter({
                 title: '知识库',
                 icon:   'View'
             }
+        }
+      ]
+    },
+    {
+      path: '/auth',
+      name: 'AuthLayout',
+      component: AuthLayout,
+      children: [
+        {
+          path: 'login',
+          name: 'Login',
+          component: Login,
+          meta: {
+            title: '登录',
+            icon: 'View'
+          }
+        },
+        {
+          path: 'register',
+          name: 'Register',
+          component: Register,
+          meta: {
+            title: '注册',
+            icon: 'View'
+          }
         }
       ]
     }
