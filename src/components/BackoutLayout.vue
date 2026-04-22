@@ -40,7 +40,6 @@ import SiderBar from "@/components/SiderBar.vue";
     width: 100%;
     // background-color: aqua;
     .content-container {
-      padding: 20px;
       min-height: calc(100% - 74px);
     }
   }

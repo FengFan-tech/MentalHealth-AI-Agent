@@ -21,5 +21,13 @@ const prop = defineProps({
     display:flex;
     align-items:center;
     justify-content:space-between;
+
+    .page-title {
+        margin: 10px;
+    }
+
+    .action-btn {
+        margin: 10px;
+    }
 }
 </style>

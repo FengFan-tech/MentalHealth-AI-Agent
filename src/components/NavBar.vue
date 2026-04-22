@@ -3,8 +3,6 @@
       <el-menu
         default-active="2"
         class="el-menu-vertical"
-        @open="handleOpen"
-        @close="handleClose"
         :collapse="isCollapse"
         :collapse-transition="false"
       >
