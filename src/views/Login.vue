@@ -30,7 +30,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, reactive, onMounted } from 'vue';
-import { login } from '../apis/admin';
+import { login } from '../apis/admin/knowledage';
 import { ElMessage } from 'element-plus';
 
 const router = useRouter();
