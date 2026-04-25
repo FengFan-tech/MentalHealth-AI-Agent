@@ -182,7 +182,7 @@ const handleSubmit = async () => {
         }
         const submitData = {
             ...formData,
-            tags: formData.tags.join(',')
+            tags: formData.tagArray.join(',')
         }
         console.log(submitData)
 
@@ -198,6 +198,11 @@ const handleSubmit = async () => {
             uploadArticle(submitData).then(res => {
                 console.log(res)
                 loading.value = false
+                formRef.value.resetFields()
+                businessId.value = ''
+                removeImage()
+                // 清空标签
+                formData.tagArray = []
                 emit('success')
             })
         }

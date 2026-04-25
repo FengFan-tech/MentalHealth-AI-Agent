@@ -9,3 +9,11 @@ export function getSessionMessages(data) {
         params: data
     })
 }
+
+// 获取会话详情
+export function getSessionDetail(sessionId) {
+    return request({
+        url: `/psychological-chat/sessions/${sessionId}/messages`,
+        method: 'get'
+    })
+}

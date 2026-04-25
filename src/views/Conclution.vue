@@ -1,6 +1,6 @@
 <template>
 <div class="conclution-page">
-    <PageHeader title="会话记录" :sub-title="subTitle" :icon="icon" :background-color="backgroundColor" />
+    <PageHeader title="会话记录" />
     <el-table :data="sessionMessages" style="width: 100%; margin-top: 20px; min-height: 780px;" :row-style="{ height: '74px' }">
         <el-table-column label="用户头像" width="100px">
             <template #default="scope">
@@ -28,6 +28,7 @@
             layout="prev, pager, next, jumper" :total="pagination.total"
             @current-change="handleCurrentChange(pagination.currentPage)" />
     </div>
+    <ConclutionDialog ref="conclutionDialog" v-model:visible="dialogVisible" :sessionInfo="sessionInfo"/>
 </div>
 </template>
 
@@ -35,8 +36,15 @@
 import { onMounted, ref } from 'vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { getSessionMessages } from '@/apis/admin/psychological'
+import ConclutionDialog from '@/components/ConclutionDialog.vue'
 
 const sessionMessages = ref([])
+
+// 结论弹窗
+const dialogVisible = ref(false)
+
+// 会话ID
+const sessionInfo = ref({})
 
 // 分页
 const pagination = {
@@ -63,15 +71,21 @@ const getSessionInfo = async () => {
     })
 }
 
+// 会话详情
+const handleDetail = (row) => {
+    dialogVisible.value = true
+    sessionInfo.value = row
+    console.log(sessionInfo.value)
+}
+
 // 获取会话消息
 onMounted(() => {
     getSessionInfo()
 })
 
-// 会话详情
-const handleDetail = (row) => {
-    console.log(row)
-}
+
+
+
 
 
 </script>

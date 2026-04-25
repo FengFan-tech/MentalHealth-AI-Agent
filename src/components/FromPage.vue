@@ -74,6 +74,7 @@ const isComp = (comp) => {
 const handleSearch = () => {
   console.log(formData.value);
   emit("search", formData.value);
+  handleReset(formRef.value);
 };
 
 const handleReset = (formRef) => {

@@ -113,10 +113,10 @@ const handleCurrentChange = (current) => {
 }
 
 // 分页
-const handleSearch = async () => {
+const handleSearch = async (searchData) => {
     const params = {
         ...pagination,
-        ...formData
+        ...searchData
     }
 
     const { records, total } = await articleList(params)
