@@ -5,11 +5,26 @@
         <div class="emontion-list">
             <el-table :data="tableData" style="width: 100%; margin-top: 20px; min-height: 700px;"
                 :row-style="{ height: '66px' }">
-                <el-table-column prop="id" label="ID"></el-table-column>
-                <el-table-column prop="userId" label="会话ID"></el-table-column>
-                <el-table-column prop="createdAt" label="记录日期"></el-table-column>
-                <el-table-column prop="moodScore" label="情绪评分"></el-table-column>
-                <el-table-column prop="dominantEmotion" label="生活指标"></el-table-column>
+                <el-table-column prop="id" label="ID" width="50"></el-table-column>
+                <el-table-column label="会话ID" width="120">
+                    <template #default="scope">
+                        {{ scope.row.nickname }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="createdAt" label="记录日期" width="120"></el-table-column>
+                <el-table-column prop="moodScore" label="情绪评分">
+                    <template #default="scope">
+                        <el-rate v-model="scope.row.moodScore" :max="10" disabled></el-rate>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="dominantEmotion" label="生活指标">
+                    <template #default="scope">
+                        <div>
+                            <p>睡眠: {{ scope.row.sleepQuality }} / 5</p>
+                            <p>压力: {{ scope.row.stressLevel }} / 5</p>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="emotionTriggers" label="情绪触发因素"></el-table-column>
                 <el-table-column prop="diaryContent" label="日志内容" ></el-table-column>
                 <el-table-column label="操作">
@@ -33,8 +48,9 @@
 import  PageHeader  from '@/components/PageHeader.vue';
 import FromPage from '@/components/FromPage.vue';
 import EmotionDialog from '@/components/EmotionDialog.vue';
-import { getEmotionLogs } from '@/apis/admin/emotion';
+import { getEmotionLogs, deleteEmotionLog } from '@/apis/admin/emotion';
 import { ref, reactive, onMounted } from 'vue';
+import { ElMessage , ElMessageBox} from 'element-plus';
 
 // 情感分析详情弹窗
 const dialogVisible = ref(false);
@@ -93,12 +109,29 @@ const handleSearch = async (searchData) => {
 // 获取详情
 const handleDetail = (row) => {
     console.log(row)
+    rowData.value = row
     dialogVisible.value = true
 }
 
 // 删除
-const handleDelete = (row) => {
+const handleDelete = async (row) => {
     console.log(row)
+    ElMessageBox.confirm('确认删除该条记录吗？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        try {
+            await deleteEmotionLog(row.id)
+            ElMessage.success('删除成功')
+            handleSearch()
+        } catch (error) {
+            ElMessage.error(error.message)
+        }
+    }).catch((error) => {
+        ElMessage.info('已取消删除')
+        console.log(error)
+    })
 }
 
 onMounted(() => {

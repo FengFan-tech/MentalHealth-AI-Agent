@@ -8,3 +8,11 @@ export function getEmotionLogs(data) {
         params: data
     })
 }
+
+// 删除情绪日志
+export function deleteEmotionLog(id) {
+    return request({
+        url: `/emotion-diary/admin/${id}`,
+        method: 'delete',
+    })
+}
