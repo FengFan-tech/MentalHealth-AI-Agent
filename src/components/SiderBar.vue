@@ -23,6 +23,7 @@
 <script setup>
 import { useAdminStore } from '@/stores/admin'
 import { useRouter } from 'vue-router'
+import { logout } from '@/apis/admin/logout'
 
 const router = useRouter()
 
@@ -32,10 +33,12 @@ const handleOpen = () => {
     adminStore.toggleCollapse()
 }
 
-
-
-const handleCommand = (command) => {
-    router.push({ name: 'Login' })
+const handleCommand = async () => {
+    await logout().then(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
+        router.push('/auth/login')
+    })
 }
 
 </script>

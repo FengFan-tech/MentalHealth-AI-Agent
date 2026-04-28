@@ -12,10 +12,10 @@ export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
-      path: '/',
+      path: '/back',
       name: 'BackoutLayout',
       component: BackoutLayout,
-      redirect: '/knowledge',
+      redirect: '/back/knowledge',
       children: [
         {
           path: 'emotion',
@@ -82,3 +82,34 @@ export const router = createRouter({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+        let userInfo = null
+        try {
+            userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        } catch {
+            userInfo = null
+        }
+        if (userInfo && userInfo.userType === 2) {
+          if (to.path.startsWith('/back')) {
+            next()
+          } else {
+            next({ path: '/back/knowledge' })
+          }
+        } else if (userInfo && userInfo.userType === 1) {
+            next()
+        } else {
+            next('/auth/login')
+        }
+    } else {
+        if (to.path.startsWith('/back')) {
+            next('/auth/login')
+        } else {
+            next()
+        }
+    }
+})
+
+

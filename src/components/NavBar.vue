@@ -12,7 +12,7 @@
             <h3>心理健康AI助手</h3>
           </div>
         </div>
-        <el-menu-item  @click="selectMenu(item.path)" v-for="item in router.options.routes[0].children" :key="item.path" :index="item.path">
+        <el-menu-item  @click="selectMenu(item.path)" v-for="item in menuItems" :key="item.path" :index="item.path">
             <el-icon><component :is="item.meta.icon" /></el-icon>
             <span>{{ item.meta.title }}</span>
         </el-menu-item>
@@ -36,6 +36,7 @@
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
 import { computed } from 'vue'
+import { router as routerConfig } from '@/router'
 
 const image = new URL('@/assets/images/机器人.png', import.meta.url).href
 
@@ -45,13 +46,14 @@ const adminStore = useAdminStore()
 
 const isCollapse = computed(() => adminStore.isCollapse)
 
+const menuItems = computed(() => {
+  const backRoute = routerConfig.options.routes.find(r => r.path === '/back')
+  return backRoute ? backRoute.children : []
+})
+
 const selectMenu = (path) => {
-  router.push(path)
-  console.log(path)
+  router.push('/back' + path)
 }
-
-
-console.log(router)
 </script>
 
 <style lang="scss" scoped>
