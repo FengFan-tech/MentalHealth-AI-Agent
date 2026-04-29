@@ -1,21 +1,35 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import BackoutLayout from '@/components/BackoutLayout.vue'
-import Emotion from '@/views/Emotion.vue'
-import Conclution from '@/views/Conclution.vue'
-import DashBroad from '@/views/DashBroad.vue'
-import Knowledge from '@/views/Knowledge.vue'
+import Emotion from '@/views/admin/Emotion.vue'
+import Conclution from '@/views/admin/Conclution.vue'
+import DashBroad from '@/views/admin/DashBroad.vue'
+import Knowledge from '@/views/admin/Knowledge.vue'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import AuthLayout from '@/components/AuthLayout.vue'
+import FrontendLayout from '../views/user/FrontendLayout.vue'
+import Home from '../views/Home.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
+      path: '/',
+      name: 'FrontendLayout',
+      component: FrontendLayout,
+      children:[
+        {
+          path: '',
+          name: 'Home',
+          component: Home,
+        }
+      ]
+    },
+    {
       path: '/back',
       name: 'BackoutLayout',
       component: BackoutLayout,
-      redirect: '/back/knowledge',
+      redirect: '/back/emotion',
       children: [
         {
           path: 'emotion',
@@ -88,7 +102,7 @@ router.beforeEach((to, from, next) => {
     if (token) {
         let userInfo = null
         try {
-            userInfo = JSON.parse(localStorage.getItem('userInfo'))
+            userInfo = JSON.parse(localStorage.getItem('username'))
         } catch {
             userInfo = null
         }
@@ -96,13 +110,15 @@ router.beforeEach((to, from, next) => {
           if (to.path.startsWith('/back')) {
             next()
           } else {
-            next({ path: '/back/knowledge' })
+            next({ path: '/back/emotion' })
           }
         } else if (userInfo && userInfo.userType === 1) {
-            next()
-        } else {
-            next('/auth/login')
-        }
+            if (to.path.startsWith('/back') || to.path.startsWith('/auth')) {
+                next('/')
+            } else {
+                next()
+            }
+        } 
     } else {
         if (to.path.startsWith('/back')) {
             next('/auth/login')

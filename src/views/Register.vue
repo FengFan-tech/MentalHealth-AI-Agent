@@ -6,9 +6,9 @@
             <p class="register-subtitle">创建新账号，开始使用心理健康AI助手</p>
         </div>
         <div class="register-form">
-            <el-form label-position="top" label-width="100%" :rules="rules">
+            <el-form label-position="top" label-width="100%" :rules="rules" ref="ruleForm">
                 <el-form-item label="用户名">
-                    <el-input placeholder="请输入用户名" class="form-input" 
+                    <el-input placeholder="请输入用户名或邮箱" class="form-input" 
                         v-model="formData.username" />
                 </el-form-item>
                 <el-form-item label="密码">
@@ -23,12 +23,20 @@
                     <el-input placeholder="请输入手机号码" class="form-input" 
                         v-model="formData.phone" />
                 </el-form-item>
+                <el-form-item label="昵称">
+                    <el-input placeholder="请输入昵称" class="form-input" 
+                        v-model="formData.nickname" />
+                </el-form-item>
+                <el-form-item label="邮箱">
+                    <el-input placeholder="请输入邮箱" class="form-input" 
+                        v-model="formData.email" />
+                </el-form-item>
                 <div class="form-footer">
                     <el-checkbox v-model="checked">同意注册协议</el-checkbox>
                     <el-link type="primary" @click="handleLogin(ruleForm)">登录账号</el-link>
                 </div>
                 <el-form-item>
-                    <el-button type="primary" class="register-button" @click="handleRegister">注册</el-button>
+                    <el-button type="primary" class="register-button" @click="handleRegister(ruleForm)">注册</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -39,13 +47,20 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, reactive } from 'vue';
+import { register } from '@/apis/user/register';
+import { ElMessage } from 'element-plus';
 
 const router = useRouter()
 const checked = ref(false);
 const formData = reactive({
-    username: '',
-    password: '',
-    phone: '',
+    "username": "",
+    "email": "",
+    "nickname": "",
+    "phone": "",
+    "password": "",
+    "confirmPassword": "",
+    "gender": 0,
+    "userType": 0
 });
 
 const rules = reactive({
@@ -57,6 +72,21 @@ const rules = reactive({
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' },
     ],
+    confirmPassword: [
+        { required: true, message: '请确认密码', trigger: 'blur' },
+    ],
+    phone: [
+        { required: true, message: '请输入手机号码', trigger: 'blur' },
+    ],
+    nickname: [
+        { required: true, message: '请输入昵称', trigger: 'blur' },
+    ],
+    email: [
+        { required: true, message: '请输入邮箱', trigger: 'blur' },
+    ],
+    checked: [
+        { required: true, message: '请同意注册协议', trigger: 'change' },
+    ],
 })
 
 const handleLogin = () => {
@@ -65,8 +95,19 @@ const handleLogin = () => {
 }
 
 // 注册处理
+const ruleForm = ref(null)
 const handleRegister = async (ruleForm) => {
-    
+    if ( !ruleForm.value) return
+    ruleForm.value.validate( async(valid) => {
+        register(formData).then(({data}) => {
+            if (!data.code){
+                ElMessage.success('注册成功，请登录')
+                router.push('/auth/login')
+            } else {
+                ElMessage.error(data.message)
+            }
+        })
+    })
 }
 </script>
 

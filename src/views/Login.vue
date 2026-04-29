@@ -2,6 +2,7 @@
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
+            <router-link to="/">首页</router-link>
             <h2>登录</h2>
             <p class="login-subtitle">欢迎回来，请登录您的账号</p>
         </div>

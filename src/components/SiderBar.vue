@@ -7,8 +7,8 @@
         <div class="sider-bar-right">
             <el-dropdown @command="handleCommand">
                 <div class="el-dropdown-link">
-                    <el-image src="/src/assets/images/users.png" alt="用户头像" class="avatar" />
-                    <span class="user-name">用户姓名</span>
+                    <el-image :src="avatar" alt="用户头像" class="avatar" />
+                    <span class="user-name">{{ nickname}}</span>
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
@@ -29,8 +29,13 @@ const router = useRouter()
 
 const adminStore = useAdminStore()
 
+const username =  JSON.parse(localStorage.getItem('username')) || []
+const nickname = username.nickname
+const avatar = username.avatar
+
 const handleOpen = () => {
     adminStore.toggleCollapse()
+    console.log(router)
 }
 
 const handleCommand = async () => {

@@ -58,7 +58,7 @@ import FromPage from '@/components/FromPage.vue';
 import ArticleDialog from '@/components/ArticleDialog.vue';
 import { reactive, ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { categoryTree, articleList, articleDetail, updateArticleStatus, deleteArticle } from '../apis/admin/knowledage';
+import { categoryTree, articleList, articleDetail, updateArticleStatus, deleteArticle } from '../../apis/admin/knowledage';
 
 const router = useRouter()
 const categoryMap = reactive({})
