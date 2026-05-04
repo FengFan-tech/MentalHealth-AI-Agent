@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import BackoutLayout from '@/components/BackoutLayout.vue'
 import Emotion from '@/views/admin/Emotion.vue'
 import Conclution from '@/views/admin/Conclution.vue'
+import Conclution from '@/views/user/Conclution.vue'
 import DashBroad from '@/views/admin/DashBroad.vue'
 import Knowledge from '@/views/admin/Knowledge.vue'
 import Login from '@/views/Login.vue'
@@ -22,7 +23,12 @@ export const router = createRouter({
           path: '',
           name: 'Home',
           component: Home,
-        }
+        },
+        {
+          path: 'conclusion',
+          name: 'Conclusion',
+          component: Conclution,
+        },
       ]
     },
     {
