@@ -2,7 +2,9 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import BackoutLayout from '@/components/BackoutLayout.vue'
 import Emotion from '@/views/admin/Emotion.vue'
 import Conclution from '@/views/admin/Conclution.vue'
-import Conclution from '@/views/user/Conclution.vue'
+import Conclutions from '@/views/user/Conclutions.vue'
+import Knowledges from '@/views/user/Knowledges.vue'
+import EmotionDiary from '@/views/user/EmotionDiary.vue'
 import DashBroad from '@/views/admin/DashBroad.vue'
 import Knowledge from '@/views/admin/Knowledge.vue'
 import Login from '@/views/Login.vue'
@@ -25,10 +27,20 @@ export const router = createRouter({
           component: Home,
         },
         {
-          path: 'conclusion',
-          name: 'Conclusion',
-          component: Conclution,
+          path: 'conclutions',
+          name: 'Conclutions',
+          component: Conclutions,
         },
+        {
+          path: 'knowledges',
+          name: 'Knowledges',
+          component: Knowledges,
+        },
+        {
+          path: 'emotion-diary',
+          name: 'EmotionDiary',
+          component: EmotionDiary,
+        }
       ]
     },
     {

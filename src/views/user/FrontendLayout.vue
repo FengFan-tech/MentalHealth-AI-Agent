@@ -7,9 +7,9 @@
     </div>
     <div class="nav-section">
       <router-link to="/" class="nav-link">首页</router-link>
-      <router-link to="/consultation" class="nav-link" v-if="isLoggedIn">AI咨询</router-link>
+      <router-link to="/conclutions" class="nav-link" v-if="isLoggedIn">AI咨询</router-link>
       <router-link to="/emotion-diary" class="nav-link" v-if="isLoggedIn">情绪日记</router-link>
-      <router-link to="/knowledge" class="nav-link">知识库</router-link>
+      <router-link to="/knowledges" class="nav-link">知识库</router-link>
       <el-button v-if="isLoggedIn" class="logout-btn" @click="handleLogout">退出登录</el-button>
       <template v-else>
         <router-link to="/auth/login" class="nav-link">登录</router-link>
@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="main-content">
-    <home />
+    <router-view />
   </div>
   <div class="footer-container">
     <p>© 2026 心理健康AI助手. 保留所有权利.</p>
@@ -121,7 +121,6 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #b1d7ff;
     position: relative;
     overflow: hidden;
 
@@ -133,7 +132,6 @@ onMounted(() => {
       width: 400px;
       height: 400px;
       border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.05);
     }
 
     &::after {
@@ -144,7 +142,6 @@ onMounted(() => {
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.05);
     }
   }
 

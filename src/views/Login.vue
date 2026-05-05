@@ -84,6 +84,8 @@ const handleLogin = async (ruleForm) => {
                 console.log(res.userInfo.userType)
                 if ( res.userInfo.userType === 2) {
                     router.push('/')
+                } else {
+                    router.push('/conclutions')
                 }
             }).catch(err => {
                 console.log('err', err);

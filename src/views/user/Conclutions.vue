@@ -1,10 +1,10 @@
 <template>
-<div class="conclution-container">
+<div class="consultation-container">
     <div class="sidebar">
         <!-- AI助手信息 -->
         <div class="ai-assistant-info">
             <div class="breathing-circle">
-                <el-image :src="iconUrl" style="width: 25px;height:25px" alt="AI助手" />
+                <el-image :src="iconUrl1" style="width: 25px;height:25px" alt="AI助手" />
             </div>
             <h3 class="assistant-name">宁波AI助手</h3>
             <div class="online-status">
@@ -13,6 +13,7 @@
             </div>
         </div>
 
+        <!-- 历史会话 -->
         <div class="session-history">
             <h4 class="section-title">会话列表</h4>
             <div class="session-list">
@@ -46,7 +47,7 @@
                         </div>
                     </div>
                     <div class="session-actions">
-                        <el-button type="danger" size="mini" @click="handleDeleteSession(session.id)">
+                        <el-button text type="danger" size="mini" @click="handleDeleteSession(session.id)">
                             <el-icon>
                                 <Delete />
                             </el-icon>
@@ -61,7 +62,7 @@
         <div class="chat-header">
             <div class="header-left">
                 <div class="chat-avatar">
-                    <el-image :src="iconUrl1" style="width: 40px;height:40px" alt="AI助手" />
+                    <el-image :src="iconUrl2" style="width: 40px;height:40px" alt="AI助手" />
                 </div>
                 <div class="chat-info">
                     <h2>AI助手</h2>
@@ -89,6 +90,42 @@
                 </div>
             </div>
 
+            <!-- 情绪花园 -->
+            <div class="emotion-garden">
+                <div class="garden-header">
+                    <div class="garden-title">情绪花园</div>
+                </div>
+
+                <div class="emotion-info">
+                    <div class="emotion-name">中性</div>
+                    <div class="emotion-score">50</div>
+                </div>
+
+                <div class="warm-tips">
+                    <div class="emotion-status-text">
+                        <span class="status-label">今天感觉</span>
+                        <span class="status-emotion">{{ currentEmotion.isNegative ? '需要关注' : '很不错' }}</span>
+                    </div>
+
+                    <div class="emotion-intensity">
+                        <span class="intensity-dots">
+                            <span v-for="(dot) in 3" :key="dot" class="dot"
+                                :class="{ 'active': getIntensityClass(currentEmotion.emotionScore) >= dot }"></span>
+                        </span>
+                        <span class="intensity-text">
+                            {{ getRiskText(currentEmotion.risklevel) }}
+                        </span>
+                    </div>
+                    <div class="warm-suggestion" v-if="currentEmotion.suggestion">
+                        <div class="suggestion-icon">💝</div>
+                        <div class="suggestion-content">
+                            <div class="suggestion-title">给你一个小建议</div>
+                            <div class="suggestion-text">{{  currentEmotion.suggestion }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 消息列表 -->
             <div v-for="msg in message" :key="msg.id" class="message-item"
                 :class="msg.senderType === 1 ? 'user-message' : 'ai-message'">
@@ -111,7 +148,8 @@
                         </div>
 
                         <!-- AI正常返回消息 -->
-                        <MarkdownRenderer v-else-if="msg.senderType === 2 && !msg.isError" :content="msg.content" :is-ai-message = "true" />
+                        <MarkdownRenderer v-else-if="msg.senderType === 2 && !msg.isError" :content="msg.content"
+                            :is-ai-message="true" />
                         <p v-else-if="msg.content" v-html="formatMessageContent(msg.content)"></p>
                     </div>
 
@@ -126,8 +164,14 @@
             <div class="input-container">
                 <el-input v-model="userMessage" placeholder="请输入您想要分享的内容..." type="textarea" :rows="3"
                     :disabled="isAiTyping" @keydown="handleKeyDown" clearable />
+                <div class="input-footer">
+                    <span>按Enter发送, Shift+Enter换行</span>
+                    <span>{{ userMessage.length }}/500</span>
+                </div>
             </div>
-            <el-button type="primary" class="send-btn" @click="sendMessage">
+
+            <el-button :disabled="!userMessage.trim() || userMessage.length > 500" type="primary" class="send-btn"
+                @click="sendMessage">
                 <el-icon>
                     <Promotion />
                 </el-icon>
@@ -143,16 +187,50 @@ import { Plus, Promotion } from '@element-plus/icons-vue';
 import { getNewConclution, getConclutionList, deleteConclution } from '@/apis/user/conclution';
 import { ElMessage } from 'element-plus';
 import MarkdownRenderer from '../../components/MarkdownRenderer.vue';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { getConclutionDetail } from '@/apis/user/conclution';
 
-const iconUrl1 = new URL('@/assets/images/robot-fill.png', window.location.href).href;
-const iconUrl2 = new URL('@/assets/images/like.png', window.location.href).href;
-const iconUrl3 = new URL('@/assets/images/users.png', window.location.href).href;
+const iconUrl1 = new URL('@/assets/images/robot-fill.png', import.meta.url).href;
+const iconUrl2 = new URL('@/assets/images/like.png', import.meta.url).href;
+const iconUrl3 = new URL('@/assets/images/users.png', import.meta.url).href;
 
 const message = ref([]);
 const isAiTyping = ref(false);
 const userMessage = ref('');
 const currentSession = ref(null);
 const sessionList = ref([]);
+
+// 情绪花园
+const currentEmotion = ref({
+    primaryEmotion: 'happy',
+    emotionScore: 50,
+    isNegative: false,
+    risklevel: 0,
+    suggestionL: '保持正常的心理健康',
+});
+
+const getIntensityClass = (score) => {
+    if (score >= 61) {
+        return 3
+    }
+    if (score >= 31) {
+        return 2
+    }
+    return 1
+}
+
+const getRiskText = (lecel) => {
+    switch (lecel) {
+        case 0:
+            return '正常';
+        case 1:
+            return '关注';
+        case 2:
+            return '预警';
+        default:
+            return '未知';
+    }
+}
 
 const createNewFrontendSession = () => {
     const newConclution = {
@@ -161,6 +239,8 @@ const createNewFrontendSession = () => {
         sessionTitle: '新会话',
     };
     currentSession.value = newConclution;
+    message.value = [];
+    getConclutionListData();
 }
 
 const handleKeyDown = (event) => {
@@ -183,6 +263,14 @@ const sendMessage = () => {
 
     if (currentSession.value.status === 'TEMP') {
         startNewSession(newMessage);
+    } else {
+        message.value.push({
+            id: Date.now(),
+            senderType: 1,
+            content: newMessage,
+            createdAt: new Date().toISOString(),
+        });
+        startAiResponse(currentSession.value.sessionid, newMessage);
     }
 
 }
@@ -209,7 +297,99 @@ const startNewSession = (newMessage) => {
         } else {
             currentSession.value = sessionData;
         }
+
+        // 刷新会话列表
+        getConclutionListData();
+
+        message.value.push({
+            id: Date.now(),
+            senderType: 1,
+            content: newMessage,
+            createdAt: new Date().toISOString(),
+        });
+
+        // 流式对话
+        startAiResponse(currentSession.value.sessionid, newMessage);
     })
+}
+
+// 流式对话
+const startAiResponse = (sessionId, initialMessage) => {
+    if (isAiTyping.value) {
+        ElMessage.error('AI正在输入中...');
+        return;
+    }
+    isAiTyping.value = true;
+
+    const aiMessage = {
+        id: `ai_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        senderType: 2,
+        content: '',
+        createdAt: new Date().toISOString(),
+    }
+    // 渲染AI消息
+    message.value.push(aiMessage);
+
+    // 调用AI接口
+    const ctrl = new AbortController();
+    fetchEventSource('/api/psychological-chat/stream', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': localStorage.getItem('token'),
+            'Accept': 'text/event-stream',
+        },
+        body: JSON.stringify({
+            sessionId,
+            initialMessage,
+        }),
+        signal: ctrl.signal,
+        onopen: (response) => {
+            console.log('连接成功', response);
+            if (response.headers.get('Content-Type') !== 'text/event-stream') {
+                ElMessage.error('服务器返回非事件流内容');
+                ctrl.abort();
+                return;
+            }
+        },
+        onmessage: (event) => {
+            const raw = event.data.trim();
+            if (!raw) {
+                return;
+            }
+            const eventName = event.event;
+
+            const aiMessage = message.value[message.value.length - 1];
+            if (eventName === 'done') {
+                isAiTyping.value = false;
+                ctrl.abort();
+                return;
+            }
+            const payload = JSON.parse(raw);
+            const ok = String(payload.code) === '200';
+            if (ok && payload.data && payload.data.content) {
+                aiMessage.content += payload.data;
+            } else if (!ok) {
+                handleError(payload.message || 'AI服务异常');
+            }
+        },
+        onerror: (event) => {
+            handleError(event || '连接错误');
+        },
+        onclose: () => {
+            console.log('连接关闭');
+            isAiTyping.value = false;
+        },
+    })
+}
+
+const handleError = (message) => {
+    const aiMessage = message.value[message.value.length - 1];
+    if (aiMessage) {
+        aiMessage.content = 'AI服务异常';
+    }
+    isAiTyping.value = false;
+    ElMessage.error(message);
 }
 
 const getConclutionListData = () => {
@@ -220,6 +400,13 @@ const getConclutionListData = () => {
         console.log(res);
         sessionList.value = res.records || [];
     })
+
+    const newConclution = {
+        sessionid: "session_" + sessionList.id,
+        status: 'ACTIVE',
+        sessionTitle: sessionList.sessionTitle,
+    };
+    currentSession.value = newConclution;
 }
 
 // 删除咨询会话

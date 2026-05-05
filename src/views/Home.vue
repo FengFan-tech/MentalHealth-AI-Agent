@@ -27,6 +27,7 @@ const iconUrl = new URL('@/assets/images/robot-fill.png', import.meta.url).href
     gap: 120px;
     max-width: 1200px;
     padding: 50px;
+    background-color: #b1d7ff;
 
     .text-section {
         max-width: 400px;
