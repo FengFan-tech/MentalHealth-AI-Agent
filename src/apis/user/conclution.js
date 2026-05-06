@@ -34,3 +34,12 @@ export function getConclutionDetail(sessionId) {
     method: 'get',
   })
 }
+
+// 获取会话情绪分析结果
+export function getEmotionAnalysis(sessionId) {
+  return request({
+    url: `/psychological-chat/session/${sessionId}/emotion`,
+    method: 'get',
+  })
+}
+

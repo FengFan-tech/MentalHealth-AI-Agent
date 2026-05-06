@@ -120,7 +120,28 @@
                         <div class="suggestion-icon">💝</div>
                         <div class="suggestion-content">
                             <div class="suggestion-title">给你一个小建议</div>
-                            <div class="suggestion-text">{{  currentEmotion.suggestion }}</div>
+                            <div class="suggestion-text">{{ currentEmotion.suggestion }}</div>
+                        </div>
+                    </div>
+
+                    <!-- 治愈行动 -->
+                    <div class="healing-actions" v-if="currentEmotion.improvementSuggestions.length > 0">
+                        <div class="actions-title">治愈小行动</div>
+                        <div class="actions-list">
+                            <div v-for="action in currentEmotion.improvementSuggestions" :key="action"
+                                class="action-item">
+                                <div class="action-icon">✨</div>
+                                <div class="action-text">{{ action }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 风险提示 -->
+                    <div class="risk-notice" v-if="currentEmotion.isNegative && currentEmotion.riskLevel > 1">
+                        <div class="notice-icon">⚠️</div>
+                        <div class="notice-content">
+                            <div class="notice-title">温馨提示</div>
+                            <div class="notice-text">{{ currentEmotion.riskDescription }}</div>
                         </div>
                     </div>
                 </div>
@@ -183,12 +204,12 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { Plus, Promotion } from '@element-plus/icons-vue';
+import { Plus, ChatRound, Clock, Delete, Promotion } from '@element-plus/icons-vue';
 import { getNewConclution, getConclutionList, deleteConclution } from '@/apis/user/conclution';
 import { ElMessage } from 'element-plus';
 import MarkdownRenderer from '../../components/MarkdownRenderer.vue';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { getConclutionDetail } from '@/apis/user/conclution';
+import { getConclutionDetail, getEmotionAnalysis } from '@/apis/user/conclution';
 
 const iconUrl1 = new URL('@/assets/images/robot-fill.png', import.meta.url).href;
 const iconUrl2 = new URL('@/assets/images/like.png', import.meta.url).href;
@@ -207,8 +228,11 @@ const currentEmotion = ref({
     isNegative: false,
     risklevel: 0,
     suggestionL: '保持正常的心理健康',
+    riskDescription: '您的情绪状态正常，无需关注。',
+    improvementSuggestions: [],
 });
 
+// 情绪分析数据
 const getIntensityClass = (score) => {
     if (score >= 61) {
         return 3
@@ -219,6 +243,7 @@ const getIntensityClass = (score) => {
     return 1
 }
 
+// 风险等级文本
 const getRiskText = (lecel) => {
     switch (lecel) {
         case 0:
@@ -232,6 +257,15 @@ const getRiskText = (lecel) => {
     }
 }
 
+// 获取情绪分析
+const getEmotionAnalysisData = (sessionId) => {
+    const id = sessionId.toString().startsWith('session_') ?  sessionId : `session_${sessionId}`;
+    getEmotionAnalysis(id).then(res => {
+        currentEmotion.value = res.data;
+    })
+}
+
+// 新建会话
 const createNewFrontendSession = () => {
     const newConclution = {
         sessionid: `temp${Date.now()}`,
@@ -250,6 +284,7 @@ const handleKeyDown = (event) => {
     }
 }
 
+// 发送消息
 const sendMessage = () => {
     if (userMessage.value.trim() === '') {
         return;
@@ -270,11 +305,12 @@ const sendMessage = () => {
             content: newMessage,
             createdAt: new Date().toISOString(),
         });
-        startAiResponse(currentSession.value.sessionid, newMessage);
+        startAiResponse(currentSession.value.sessionId, newMessage);
     }
 
 }
 
+// 开始新会话
 const startNewSession = (newMessage) => {
     const sessionParams = {
         initialMessage: newMessage,
@@ -287,7 +323,7 @@ const startNewSession = (newMessage) => {
 
     getNewConclution(sessionParams).then(() => {
         const sessionData = {
-            sessionid: res.sessionid,
+            sessionId: res.sessionId,
             status: res.status,
             sessionTitle: sessionParams.sessionTitle,
         }
@@ -309,7 +345,7 @@ const startNewSession = (newMessage) => {
         });
 
         // 流式对话
-        startAiResponse(currentSession.value.sessionid, newMessage);
+        startAiResponse(currentSession.value.sessionId, newMessage);
     })
 }
 
@@ -363,6 +399,7 @@ const startAiResponse = (sessionId, initialMessage) => {
             if (eventName === 'done') {
                 isAiTyping.value = false;
                 ctrl.abort();
+                getEmotionAnalysisData(currentSession.value.sessionId);
                 return;
             }
             const payload = JSON.parse(raw);
@@ -379,10 +416,12 @@ const startAiResponse = (sessionId, initialMessage) => {
         onclose: () => {
             console.log('连接关闭');
             isAiTyping.value = false;
+            getEmotionAnalysisData(currentSession.value.sessionId);
         },
     })
 }
 
+// 处理流式对话错误情况
 const handleError = (message) => {
     const aiMessage = message.value[message.value.length - 1];
     if (aiMessage) {
@@ -392,6 +431,7 @@ const handleError = (message) => {
     ElMessage.error(message);
 }
 
+// 获取会话列表
 const getConclutionListData = () => {
     getConclutionList({
         pageNum: 1,
@@ -400,13 +440,6 @@ const getConclutionListData = () => {
         console.log(res);
         sessionList.value = res.records || [];
     })
-
-    const newConclution = {
-        sessionid: "session_" + sessionList.id,
-        status: 'ACTIVE',
-        sessionTitle: sessionList.sessionTitle,
-    };
-    currentSession.value = newConclution;
 }
 
 // 删除咨询会话
@@ -417,12 +450,20 @@ const handleDeleteSession = (sessionId) => {
     })
 }
 
-// 获取咨询会话
+// 点击会话列表获取咨询会话
 const handleSessionClick = (session) => {
-    currentSession.value = session;
     getConclutionDetail(session.id).then(res => {
         message.value = res || [];
     })
+    // 更新当前对话对象的数据
+    const newSession = {
+        sessionId: "session_" + session.id,
+        status: 'ACTIVE',
+        sessionTitle: session.sessionTitle,
+    };
+    currentSession.value = newSession;
+    // 更新情绪分析数据
+    getEmotionAnalysisData(session.id);
 }
 
 const formatMessageContent = (content) => {
@@ -431,8 +472,9 @@ const formatMessageContent = (content) => {
 
 
 onMounted(() => {
-    createNewFrontendSession();
     getConclutionListData();
+    createNewFrontendSession();
+    
 })
 
 
