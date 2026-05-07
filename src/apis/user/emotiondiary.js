@@ -1,4 +1,4 @@
-import { request } from '../utils/sever';
+import { request } from '@/utils/sever';
 
 // 创建或更新情绪日志
 export function createOrUpdateEmotionDiary(params) {

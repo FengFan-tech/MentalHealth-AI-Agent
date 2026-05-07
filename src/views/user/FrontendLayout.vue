@@ -54,7 +54,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .frontend-layout {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 
@@ -62,10 +62,9 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 50px;
-    height: 60px;
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: 60px;
 
     .brand-section {
       display: flex;
@@ -119,29 +118,11 @@ onMounted(() => {
   .main-content {
     flex: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -100px;
-      right: -100px;
-      width: 400px;
-      height: 400px;
-      border-radius: 50%;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -80px;
-      left: -80px;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
+    width: 100%;
+    min-height: 0;
+    :deep(router-view) {
+      width: 100%;
+      height: 100%;
     }
   }
 
