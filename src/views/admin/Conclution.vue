@@ -4,7 +4,7 @@
     <el-table :data="sessionMessages" style="width: 100%; margin-top: 20px; min-height: 780px;" :row-style="{ height: '74px' }">
         <el-table-column label="用户头像" width="100px">
             <template #default="scope">
-                <el-avatar size="medium">{{ scope.row.userNickname }}</el-avatar>
+                <el-avatar>{{ scope.row.userNickname }}</el-avatar>
             </template>
         </el-table-column>
         <el-table-column prop="sessionTitle" label="情绪日志">

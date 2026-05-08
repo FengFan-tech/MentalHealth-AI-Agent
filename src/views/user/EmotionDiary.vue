@@ -1,7 +1,10 @@
 <template>
 <div class="emotionDiary-container">
     <div class="header-section">
-        <div class="header-title"></div>
+        <div class="header-content">
+            <h2>情绪日记</h2>
+            <el-image :src="iconUrl" style="width: 30px; height: 30px;"></el-image>
+        </div>
     </div>
     <div class="content">
         <div class="diary-card">
@@ -9,7 +12,7 @@
             <div class="section">
                 <p>您今天心情怎么样</p>
                 <div class="rate">
-                    <el-rate v-model="diaryForm.moodScore" show-text :texts="emotionScores" :max="10"
+                    <el-rate v-model="diaryForm.moodScore" show-text :texts="emotionStatus" :max="10"
                         size="large"></el-rate>
                 </div>
             </div>
@@ -78,6 +81,7 @@
 import { dayjs } from 'element-plus';
 import { reactive } from 'vue';
 import { createOrUpdateEmotionDiary } from '@/apis/user/emotiondiary';
+import { ElMessage } from 'element-plus';
 
 const emotionStatus = ['绝望崩溃', '消沉抑郁', '焦虑烦躁', '低落不悦', '平静淡然', '轻松惬意', '愉悦舒心', '欢欣满足', '兴奋欣喜', '极致幸福']
 
@@ -136,4 +140,157 @@ const submitForm = () => {
 const iconUrl = new URL('@/assets/images/like.png', import.meta.url).href
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.emotionDiary-container {
+    min-height: 100%;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.header-section {
+    margin-bottom: 20px;
+    .header-content {
+        height: 100px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+        //渐变背景
+        background: linear-gradient( 160deg, #ffe346 0%, #f8a8a8 100%);
+        h2 {
+            font-size: 40px;
+            font-weight: 700;
+            color: #303133;
+            margin-left: 20px;
+        }
+    }
+}
+
+.content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.diary-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #303133;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ebeef5;
+    }
+
+    .section {
+        p {
+            font-size: 14px;
+            color: #606266;
+            margin-bottom: 16px;
+        }
+
+        .rate {
+            display: flex;
+            justify-content: flex-start;
+        }
+    }
+}
+
+.emotion-gird {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+
+    .emotion-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 12px;
+        border-radius: 12px;
+        background: #f5f7fa;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+            background: #e8f4ff;
+        }
+
+        &.selected {
+            background: #e8f8e8;
+            border: 2px solid #67c23a;
+        }
+
+        p {
+            margin: 8px 0 0;
+            font-size: 13px;
+            color: #606266;
+        }
+
+        .el-image {
+            :deep(img) {
+                border-radius: 50%;
+                background: #fff;
+                padding: 8px;
+            }
+        }
+    }
+}
+
+.detail-form {
+    .form-group {
+        margin-bottom: 20px;
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #606266;
+            margin-bottom: 8px;
+        }
+
+        .el-input {
+            :deep(textarea) {
+                resize: none;
+            }
+        }
+    }
+
+    .life-indicator {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+
+        .indicator-group {
+            .form-label {
+                display: block;
+                font-size: 14px;
+                font-weight: 500;
+                color: #606266;
+                margin-bottom: 8px;
+            }
+        }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-start;
+
+        .el-button {
+            padding: 10px 24px;
+            font-size: 14px;
+            border-radius: 6px;
+        }
+    }
+}
+</style>

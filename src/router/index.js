@@ -5,6 +5,7 @@ import Conclution from '@/views/admin/Conclution.vue'
 import Conclutions from '@/views/user/Conclutions.vue'
 import Knowledges from '@/views/user/Knowledges.vue'
 import EmotionDiary from '@/views/user/EmotionDiary.vue'
+import KnowledgeDetail from '@/views/user/KnowledgeDetail.vue'
 import DashBroad from '@/views/admin/DashBroad.vue'
 import Knowledge from '@/views/admin/Knowledge.vue'
 import Login from '@/views/Login.vue'
@@ -40,7 +41,12 @@ export const router = createRouter({
           path: 'emotion-diary',
           name: 'EmotionDiary',
           component: EmotionDiary,
-        }
+        },
+        {
+          path: 'knowledgeDetail/:id?',
+          name: 'KnowledgeDetail',
+          component: KnowledgeDetail,
+        },
       ]
     },
     {

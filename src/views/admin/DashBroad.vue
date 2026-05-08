@@ -103,9 +103,9 @@
             </el-card>
         </el-col>
         <el-col>
-            <el-card style="width: 100%;">
+            <el-card style="width: 100%; margin-top: 20px;" >
                 <template #header>
-                    <div class="card-header">
+                    <div class="card-header" >
                         <span>用户活跃度分析</span>
                     </div>
                 </template>

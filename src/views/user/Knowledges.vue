@@ -12,7 +12,7 @@
                 推荐列表
             </div>
             <div class="Knowledges-page-left-content">
-                <div v-for="item in knowledges" :key="item.id" class="Knowledges-page-left-content-item">
+                <div v-for="item in knowledges" :key="item.id" class="Knowledges-page-left-content-item" @click="handleClickDetail(item.id)">
                     <h4>{{ item.title }}</h4>
                     <p>
                         <el-icon><Histogram/></el-icon>
@@ -27,15 +27,15 @@
                 知识库列表
             </div>
             <div class="Knowledges-page-right-content">
-                <div v-for="item in knowledges" :key="item.id" class="Knowledges-page-right-content-item">
+                <div v-for="item in knowledges" :key="item.id" class="Knowledges-page-right-content-item" @click="handleClickDetail(item.id)">
                     <el-image :src="handleCoverImage(item.coverImage)"></el-image>
-                    <div class="Knowledges-page-right-content-item-title">
-                        <h2>{{ item.title }}</h2>
-                    </div>
                     <div class="Knowledges-page-right-content-item-desc">
                         <p>{{ item.authorName }} {{ item.tags }}</p>
                         <p>{{ item.summary }}</p>
                         <span> 发布时间： {{ item.publishedAt }}</span>
+                    </div>
+                    <div class="Knowledges-page-right-content-item-title">
+                        <h2>{{ item.title }}</h2>
                     </div>
                 </div>
             </div>
@@ -43,8 +43,8 @@
     </div>
     <!-- 分页 -->
     <div class="Knowledges-page-pagination">
-        <el-pagination layout="total, prev, pager, next, jumper" :total="pageForm.total" :page-size="pageForm.size"
-            :current-page="pageForm.currentPage" @current-change="handlePageChange(val)" />
+        <el-pagination layout="total, prev, pager, next, jumper" :total="pageForm.total" v-model:page-size="pageForm.size"
+            v-model:current-page="pageForm.currentPage" @current-change="handlePageChange(pageForm.currentPage)" />
     </div>
 </div>
 </template>
@@ -53,8 +53,13 @@
 import { getKnowledges } from '@/apis/user/knowledges'
 import { Histogram } from '@element-plus/icons-vue'
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const knowledges = ref([])
+// 推荐列表
+const recommendKnowledges = ref([])
 
 // 分页
 const pageForm = ref({
@@ -68,12 +73,12 @@ const articleForm = ref({
     sortDirection: '',
 })
 
-const handlePageChange = (val) => {
-    pageForm.value.currentPage = val
+const handlePageChange = () => {
     fetchKnowledges()
 }
 
 const fetchKnowledges = async () => {
+    console.log(pageForm.value)
     const res = await getKnowledges({
         ...pageForm.value,
         ...articleForm.value
@@ -87,8 +92,24 @@ const handleCoverImage = (coverImage) => {
     return coverImage ? 'http://159.75.169.224:2235' + coverImage : 'https://file.inedo.com/ps/ajq9pi'
 }
 
+// 点击详情
+const handleClickDetail = (id) => {
+    console.log(id)
+    router.push({
+        path: '/knowledgeDetail',
+        query: {
+            id
+        }
+    })
+}
+
 onMounted(() => {
-    fetchKnowledges()
+    fetchKnowledges({
+        sortField: 'readCount',
+        sortDirection: 'desc',
+        size: 5,
+        currentPage: 1,
+    })
 })
 
 
@@ -105,7 +126,7 @@ onMounted(() => {
     margin-bottom: 20px;
     margin-top: 0;
     height: 100px;
-    width: 100;
+    width: 100%;
     border-radius: 10px;
     // 渐变
     background: linear-gradient(to bottom, #79a1dc, #e38787);
@@ -224,6 +245,9 @@ onMounted(() => {
             }
 
             &-title {
+                // 从右边开始显示标题
+                text-align: right;
+
                 h2 {
                     font-size: 16px;
                     font-weight: 600;
@@ -234,7 +258,6 @@ onMounted(() => {
             }
 
             &-desc {
-                flex: 1;
 
                 p {
                     font-size: 13px;

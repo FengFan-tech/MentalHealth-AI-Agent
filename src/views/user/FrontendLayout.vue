@@ -57,6 +57,7 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 
   .navbar-container {
     display: flex;
@@ -65,6 +66,10 @@ onMounted(() => {
     background-color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     height: 60px;
+    flex-shrink: 0;
+    z-index: 100;
+    position: sticky;
+    top: 0;
 
     .brand-section {
       display: flex;
@@ -119,10 +124,10 @@ onMounted(() => {
     flex: 1;
     display: flex;
     width: 100%;
-    min-height: 0;
+    overflow-y: auto;
     :deep(router-view) {
       width: 100%;
-      height: 100%;
+      min-height: 100%;
     }
   }
 
@@ -132,6 +137,10 @@ onMounted(() => {
     justify-content: center;
     height: 50px;
     background-color: #2c3e50;
+    flex-shrink: 0;
+    z-index: 100;
+    position: sticky;
+    bottom: 0;
 
     p {
       font-size: 12px;
