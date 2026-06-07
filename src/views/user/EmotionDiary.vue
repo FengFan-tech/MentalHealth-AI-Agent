@@ -146,6 +146,8 @@ const iconUrl = new URL('@/assets/images/like.png', import.meta.url).href
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .header-section {

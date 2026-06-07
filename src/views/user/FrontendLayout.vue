@@ -125,6 +125,8 @@ onMounted(() => {
     display: flex;
     width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
     :deep(router-view) {
       width: 100%;
       min-height: 100%;

@@ -25,8 +25,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
-import { defineProps, defineEmits } from "vue";
+import { ref, watch, computed, onBeforeUnmount } from "vue";
 
 const props = defineProps({
   formItem: {
@@ -37,7 +36,6 @@ const props = defineProps({
 
 const emit = defineEmits(["search"]);
 
-// 用于存储表单数据的对象
 const formData = ref({});
 
 const formRef = ref(null);
@@ -71,10 +69,24 @@ const isComp = (comp) => {
   }[comp];
 };
 
+// 搜索防抖：输入时自动触发搜索，300ms 内重复输入只执行最后一次
+let searchTimer = null
+const debouncedSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    emit("search", formData.value)
+  }, 300)
+}
+
+// 监听表单数据变化，自动触发防抖搜索
+watch(formData, () => {
+  debouncedSearch()
+}, { deep: true })
+
+// 点击查询按钮时立即搜索（跳过防抖）
 const handleSearch = () => {
-  console.log(formData.value);
+  clearTimeout(searchTimer)
   emit("search", formData.value);
-  handleReset(formRef.value);
 };
 
 const handleReset = (formRef) => {
@@ -83,6 +95,10 @@ const handleReset = (formRef) => {
   }
   formRef.resetFields();
 };
+
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+})
 </script>
 
 <style lang="scss" scoped>

@@ -5,7 +5,7 @@ export function getNewConclution(params) {
   return request({
     url: '/psychological-chat/session/start',
     method: 'post',
-    params
+    data: params
   })
 }
 

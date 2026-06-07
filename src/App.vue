@@ -1,8 +1,23 @@
 <script setup>
-// import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const excludeRef = ref([])
+
+router.afterEach((to) => {
+  if (to.meta.noCache) {
+    if (!excludeRef.value.includes(to.name)) {
+      excludeRef.value.push(to.name)
+    }
+  }
+})
 </script>
 
 <template>
-  <!-- <HelloWorld /> -->
-   <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <keep-alive :exclude="excludeRef">
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
